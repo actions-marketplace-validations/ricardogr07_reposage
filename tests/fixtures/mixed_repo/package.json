@@ -1,0 +1,10 @@
+{
+  "name": "mixed-fixture-web",
+  "dependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.0"
+  }
+}
+

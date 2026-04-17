@@ -1,0 +1,18 @@
+[project]
+name = "python-fixture"
+version = "0.1.0"
+dependencies = [
+  "fastapi>=0.115",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.mypy]
+python_version = "3.12"
+

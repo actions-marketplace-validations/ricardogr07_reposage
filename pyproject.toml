@@ -1,0 +1,99 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "reposage"
+version = "0.1.0"
+description = "Deterministic repository audits for engineers."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "RepoSage contributors" },
+]
+keywords = ["audit", "cli", "repository", "static-analysis"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2",
+  "hatchling>=1.26",
+  "mypy>=1.11",
+  "pytest>=8.3",
+  "pytest-cov>=6.0",
+  "ruff>=0.11",
+  "tox>=4.27",
+]
+
+[project.scripts]
+reposage = "reposage.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/example/reposage"
+Issues = "https://github.com/example/reposage/issues"
+
+[dependency-groups]
+dev = [
+  "build>=1.2",
+  "hatchling>=1.26",
+  "mypy>=1.11",
+  "pytest>=8.3",
+  "pytest-cov>=6.0",
+  "ruff>=0.11",
+  "tox>=4.27",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/reposage"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/docs",
+  "/examples",
+  "/README.md",
+  "/PLAN.md",
+  "/LICENSE",
+  "/tox.ini",
+]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers --cov=reposage --cov-report=term-missing -p no:cacheprovider -p no:tmpdir"
+norecursedirs = ["tests/fixtures"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["B", "C4", "E", "F", "I", "SIM", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = ["src"]
+packages = ["reposage"]
+check_untyped_defs = true
+disallow_any_generics = true
+no_implicit_optional = true
+strict_equality = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true

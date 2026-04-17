@@ -1,0 +1,1 @@
+"""Monorepo library package."""

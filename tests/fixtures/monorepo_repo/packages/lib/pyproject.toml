@@ -1,0 +1,7 @@
+[project]
+name = "lib-package"
+version = "0.1.0"
+dependencies = [
+  "pydantic>=2.10"
+]
+
