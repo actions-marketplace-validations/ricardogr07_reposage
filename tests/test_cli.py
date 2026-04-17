@@ -14,8 +14,8 @@ def test_cli_report_command_emits_markdown(capsys) -> None:
     assert "RepoSage Audit: python_repo" in captured.out
 
 
-def test_cli_scan_command_emits_json(capsys) -> None:
-    exit_code = main(["scan", str(fixture_path("python_repo"))])
+def test_cli_report_command_emits_json(capsys) -> None:
+    exit_code = main(["report", str(fixture_path("python_repo")), "--format", "json"])
 
     captured = capsys.readouterr()
     assert exit_code == 0
