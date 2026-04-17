@@ -2,6 +2,14 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
+import pytest
+
+from reposage.analysis.risk import analyze_risk
+from reposage.analysis.tests import detect_test_files
+from reposage.config import ScanConfig
+from reposage.models import ArchitectureSummary, DependencySummary, FileRecord, QualitySignals
 from reposage.pipeline import build_audit_report
 from tests.conftest import fixture_path
 
@@ -22,3 +30,58 @@ def test_monorepo_fixture_notes_multiple_manifest_roots() -> None:
     report = build_audit_report(fixture_path("monorepo_repo"))
 
     assert any("monorepo" in note.lower() for note in report.architecture.architecture_notes)
+
+
+def test_is_test_file_ignores_non_code_extensions() -> None:
+    records = [
+        FileRecord(path="test_data.csv", extension=".csv", size_bytes=100, line_count=5),
+        FileRecord(path="test_readme.md", extension=".md", size_bytes=200, line_count=10),
+        FileRecord(path="test_fixtures.json", extension=".json", size_bytes=50, line_count=3),
+        FileRecord(path="test_output.txt", extension=".txt", size_bytes=30, line_count=2),
+        FileRecord(path="test_service.py", extension=".py", size_bytes=300, line_count=20),
+    ]
+
+    result = detect_test_files(records)
+
+    assert result == ["test_service.py"]
+
+
+@pytest.mark.parametrize(
+    "lint_config_name",
+    ["eslint.config.js", "eslint.config.mjs", "eslint.config.cjs"],
+)
+def test_eslint_v9_flat_config_files_count_as_lint_signals(
+    tmp_path, lint_config_name: str
+) -> None:
+    (tmp_path / lint_config_name).write_text("export default [];\n", encoding="utf-8")
+
+    report = build_audit_report(tmp_path)
+
+    assert report.quality.lint_present is True
+    assert report.quality.lint_files == [lint_config_name]
+
+
+def test_risk_flags_large_modules_when_god_modules_present() -> None:
+    quality = QualitySignals(score=80, has_tests=True, ci_present=True, documentation_present=True)
+    architecture = ArchitectureSummary(god_modules=["bigfile.py (250 lines)"])
+    dependencies = DependencySummary()
+
+    report = analyze_risk(quality, architecture, dependencies)
+
+    assert any(item.title == "Large modules detected" for item in report.items)
+
+
+def test_dependency_surface_risk_uses_configured_threshold(tmp_path: Path) -> None:
+    (tmp_path / "requirements.txt").write_text(
+        "\n".join(["requests>=2.0", "flask>=3.0"]),
+        encoding="utf-8",
+    )
+
+    report = build_audit_report(
+        tmp_path,
+        ScanConfig(dependency_count_risk_threshold=2),
+    )
+
+    assert any(
+        item.title == "Dependency surface area is growing" for item in report.risk.items
+    )

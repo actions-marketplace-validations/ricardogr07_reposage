@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import shutil
-import uuid
 from pathlib import Path
 
 from reposage.config import DEFAULT_SCAN_CONFIG
@@ -12,17 +10,13 @@ from reposage.scan.filesystem import scan_repository
 from tests.conftest import fixture_path
 
 
-def test_scan_repository_ignores_configured_directories() -> None:
-    temp_root = Path(".reposage-test-artifacts") / f"scan-{uuid.uuid4().hex}"
-    try:
-        (temp_root / "src").mkdir(parents=True)
-        (temp_root / "src" / "app.py").write_text("print('hi')\n", encoding="utf-8")
-        (temp_root / "node_modules").mkdir()
-        (temp_root / "node_modules" / "index.js").write_text("export {};\n", encoding="utf-8")
+def test_scan_repository_ignores_configured_directories(tmp_path: Path) -> None:
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "app.py").write_text("print('hi')\n", encoding="utf-8")
+    (tmp_path / "node_modules").mkdir()
+    (tmp_path / "node_modules" / "index.js").write_text("export {};\n", encoding="utf-8")
 
-        records, ignored = scan_repository(temp_root, DEFAULT_SCAN_CONFIG)
-    finally:
-        shutil.rmtree(temp_root, ignore_errors=True)
+    records, ignored = scan_repository(tmp_path, DEFAULT_SCAN_CONFIG)
 
     assert [record.path for record in records] == ["src/app.py"]
     assert ignored == ["node_modules"]

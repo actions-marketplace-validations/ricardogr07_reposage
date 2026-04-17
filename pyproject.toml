@@ -41,8 +41,8 @@ dev = [
 reposage = "reposage.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/example/reposage"
-Issues = "https://github.com/example/reposage/issues"
+Homepage = "https://github.com/ricardogr07/reposage"
+Issues = "https://github.com/ricardogr07/reposage/issues"
 
 [dependency-groups]
 dev = [
@@ -71,7 +71,7 @@ include = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--strict-config --strict-markers --cov=reposage --cov-report=term-missing -p no:cacheprovider -p no:tmpdir"
+addopts = "--strict-config --strict-markers --cov=reposage --cov-report=term-missing -p no:cacheprovider"
 norecursedirs = ["tests/fixtures"]
 testpaths = ["tests"]
 
@@ -91,6 +91,8 @@ python_version = "3.12"
 mypy_path = ["src"]
 packages = ["reposage"]
 check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
 disallow_any_generics = true
 no_implicit_optional = true
 strict_equality = true

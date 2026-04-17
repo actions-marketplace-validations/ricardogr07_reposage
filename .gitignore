@@ -10,9 +10,12 @@ __pycache__/
 .tox/
 .venv/
 .tmp/
-.reposage-test-artifacts/
 *.env
-
+.claude/
+.codex*
+pytest*
+.pytest*
+.reposage*
 build/
 dist/
 htmlcov/

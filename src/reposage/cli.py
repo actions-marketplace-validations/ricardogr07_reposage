@@ -20,10 +20,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    scan_parser = subparsers.add_parser("scan", help="Scan a repository and emit JSON.")
-    scan_parser.add_argument("path", help="Path to the repository to analyze.")
-    scan_parser.add_argument("--output", help="Optional path for JSON output.")
-
     report_parser = subparsers.add_parser("report", help="Render a repository report.")
     report_parser.add_argument("path", help="Path to the repository to analyze.")
     report_parser.add_argument(
@@ -60,9 +56,7 @@ def main(argv: list[str] | None = None) -> int:
 
     report = build_audit_report(target_path)
 
-    if args.command == "scan":
-        output = render_json_report(report)
-    elif args.command == "report":
+    if args.command == "report":
         output = (
             render_markdown_report(report)
             if args.format == "markdown"
