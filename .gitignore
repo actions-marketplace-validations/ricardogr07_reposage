@@ -11,7 +11,11 @@ __pycache__/
 .venv/
 .tmp/
 *.env
-
+.claude/
+.codex*
+pytest*
+.pytest*
+.reposage*
 build/
 dist/
 htmlcov/
