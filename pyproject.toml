@@ -71,7 +71,7 @@ include = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--strict-config --strict-markers --cov=reposage --cov-report=term-missing -p no:cacheprovider -p no:tmpdir"
+addopts = "--strict-config --strict-markers --cov=reposage --cov-report=term-missing -p no:cacheprovider"
 norecursedirs = ["tests/fixtures"]
 testpaths = ["tests"]
 

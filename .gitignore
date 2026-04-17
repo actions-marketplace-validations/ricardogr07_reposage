@@ -10,7 +10,6 @@ __pycache__/
 .tox/
 .venv/
 .tmp/
-.reposage-test-artifacts/
 *.env
 
 build/
