@@ -39,6 +39,10 @@ dev = [
 ai = [
   "anthropic>=0.40",
 ]
+server = [
+  "mcp[cli]>=1.0",
+  "uvicorn>=0.30",
+]
 
 [project.scripts]
 reposage = "reposage.cli:main"
@@ -114,4 +118,12 @@ warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
 module = "anthropic.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "mcp.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "starlette.*"
 ignore_missing_imports = true
