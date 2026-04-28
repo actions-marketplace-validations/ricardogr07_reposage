@@ -34,6 +34,7 @@ def test_json_report_has_expected_shape() -> None:
         "security",
         "ts_config",
         "ts_analysis",
+        "api_surface",
     }
     assert set(payload) == expected_keys
     assert payload["inventory"]["project_name"] == "python_repo"
