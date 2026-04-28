@@ -21,6 +21,8 @@ LINT_FILE_NAMES = {
     "checkstyle.xml",
     "pmd.xml",
     "spotbugs.xml",
+    "clippy.toml",
+    ".clippy.toml",
 }
 TYPE_FILE_NAMES = {"mypy.ini", "pyrightconfig.json", "py.typed", "tsconfig.json"}
 
@@ -120,7 +122,9 @@ def analyze_quality(
             )
 
     java_present = any(r.extension == ".java" for r in file_records)
-    typing_present = bool(typing_files) or java_present
+    rust_present = any(r.extension == ".rs" for r in file_records)
+    # Rust and Java are statically typed; no config file needed as evidence
+    typing_present = bool(typing_files) or java_present or rust_present
 
     present_count = sum(
         [

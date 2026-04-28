@@ -20,6 +20,15 @@ FRAMEWORK_NAMES = {
     "react": "React",
     "svelte": "Svelte",
     "vue": "Vue",
+    # Rust web/application frameworks
+    "actix-web": "Actix",
+    "axum": "Axum",
+    "rocket": "Rocket",
+    "warp": "Warp",
+    "tauri": "Tauri",
+    "tonic": "Tonic",
+    "diesel": "Diesel",
+    "sqlx": "SQLx",
 }
 
 FRAMEWORK_PREFIXES = {
