@@ -76,6 +76,10 @@ _VULN_SEVERITY_ORDER = {"critical": -1, "high": 0, "medium": 1, "low": 2, "unkno
 def _render_tasks(report: AuditReport, enrichment: EnrichmentResult | None) -> str:
     lines: list[str] = []
 
+    if report.api_surface and report.api_surface.breaking_changes:
+        for sym in report.api_surface.breaking_changes:
+            lines.append(f"- [ ] [breaking/high] `{sym.name}` removed from `{sym.module}`")
+
     if report.security:
         for vuln in sorted(
             report.security.vulnerabilities,

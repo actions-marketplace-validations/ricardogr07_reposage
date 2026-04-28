@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from reposage.enrichment.models import EnrichmentResult
 from reposage.models import (
+    APISurface,
     AuditReport,
     Dependency,
     LanguageStat,
@@ -79,6 +80,9 @@ def render_markdown_report(report: AuditReport, enrichment: EnrichmentResult | N
     if report.ts_config is not None or report.ts_analysis is not None:
         lines.extend(["", *_render_ts(report.ts_config, report.ts_analysis).splitlines()])
 
+    if report.api_surface is not None:
+        lines.extend(["", *_render_api_surface(report.api_surface).splitlines()])
+
     if report.security is not None:
         lines.extend(["", *_render_security(report.security).splitlines()])
 
@@ -86,6 +90,30 @@ def render_markdown_report(report: AuditReport, enrichment: EnrichmentResult | N
         lines.extend(_render_enrichment(enrichment))
 
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _render_api_surface(api: APISurface) -> str:
+    lines = ["## API Surface", ""]
+    total = len(api.public_symbols)
+    lines.append(
+        f"**{total} public symbols** — {api.undocumented_count} undocumented, "
+        f"{api.untyped_count} untyped functions"
+    )
+
+    if api.breaking_changes:
+        lines += ["", "### Breaking Changes", ""]
+        lines.append("| Symbol | Module | Last Seen |")
+        lines.append("|---|---|---|")
+        for sym in api.breaking_changes:
+            lines.append(f"| `{sym.name}` | `{sym.module}` | `{sym.last_seen_commit}` |")
+
+    if api.notes:
+        lines += [""]
+        for note in api.notes:
+            lines.append(f"_{note}_")
+
+    lines.append("")
+    return "\n".join(lines)
 
 
 def _render_ts(ts_config: TSConfig | None, ts_analysis: TSCodeSignals | None) -> str:

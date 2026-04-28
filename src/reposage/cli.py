@@ -50,6 +50,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=False,
         help="Run security and quality tool integrations (pip-audit, bandit, ruff, npm audit, eslint).",  # noqa: E501
     )
+    report_parser.add_argument(
+        "--api-surface",
+        action="store_true",
+        default=False,
+        help="Analyze Python public API surface and detect breaking changes.",
+    )
 
     run_parser = subparsers.add_parser(
         "run",
@@ -75,6 +81,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=False,
         help="Run security and quality tool integrations (pip-audit, bandit, ruff, npm audit, eslint).",  # noqa: E501
     )
+    run_parser.add_argument(
+        "--api-surface",
+        action="store_true",
+        default=False,
+        help="Analyze Python public API surface and detect breaking changes.",
+    )
 
     return parser
 
@@ -99,6 +111,11 @@ def main(argv: list[str] | None = None) -> int:
         from reposage.security.scan import scan_security
 
         report.security = scan_security(target_path, report)
+
+    if getattr(args, "api_surface", False):
+        from reposage.api.surface import analyze_api_surface
+
+        report.api_surface = analyze_api_surface(target_path, report)
 
     enrichment = None
     if getattr(args, "enrich", False):
