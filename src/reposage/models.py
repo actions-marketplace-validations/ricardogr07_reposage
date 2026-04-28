@@ -185,6 +185,43 @@ class TSCodeSignals:
 
 
 @dataclass(slots=True)
+class PublicSymbol:
+    """A public symbol detected in the repository's Python source."""
+
+    name: str
+    kind: str  # "function" | "class" | "constant"
+    module: str  # dotted module path (e.g. "reposage.scan.filesystem")
+    has_docstring: bool
+    has_type_annotations: bool
+    exported_via_all: bool
+
+
+@dataclass(slots=True)
+class RemovedSymbol:
+    """A public symbol present in git history but absent from the current tree."""
+
+    name: str
+    module: str
+    last_seen_commit: str  # short SHA
+
+
+@dataclass(slots=True)
+class APISurface:
+    """Python public API surface extracted from the repository.
+
+    Note: ``exported_via_all`` reflects only explicit ``__all__`` membership.
+    Import re-exports from ``__init__.py`` are not tracked.
+    """
+
+    public_symbols: list[PublicSymbol] = field(default_factory=list)
+    removed_symbols: list[RemovedSymbol] = field(default_factory=list)
+    undocumented_count: int = 0
+    untyped_count: int = 0
+    breaking_changes: list[RemovedSymbol] = field(default_factory=list)
+    notes: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
 class AuditReport:
     """Complete deterministic repository audit."""
 
@@ -196,6 +233,7 @@ class AuditReport:
     security: SecuritySummary | None = None
     ts_config: TSConfig | None = None
     ts_analysis: TSCodeSignals | None = None
+    api_surface: APISurface | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable representation of the report."""
