@@ -13,12 +13,19 @@ from reposage.scan._dep_parsers import (
     _parse_pyproject,
     _parse_requirements,
 )
+from reposage.scan._dep_parsers_dotnet import (
+    _parse_csproj,
+    _parse_directory_packages_props,
+    _parse_packages_config,
+)
 
 _PYPROJECT = "pyproject.toml"
 _PACKAGE_JSON = "package.json"
 _REQUIREMENTS_PREFIX = "requirements"
 _JAVA_MANIFESTS = {"pom.xml", "build.gradle", "build.gradle.kts"}
 _RUST_MANIFESTS = {"Cargo.toml"}
+_CSHARP_MANIFEST_SUFFIXES = {".csproj"}
+_CSHARP_NAMED_MANIFESTS = {"packages.config", "Directory.Packages.props"}
 
 
 def summarize_dependencies(root: Path, file_records: list[FileRecord]) -> DependencySummary:
@@ -48,6 +55,12 @@ def summarize_dependencies(root: Path, file_records: list[FileRecord]) -> Depend
             parsed_dependencies = _parse_build_gradle(absolute_path, manifest_path)
         elif file_name == "Cargo.toml":
             parsed_dependencies = _parse_cargo_toml(absolute_path, manifest_path)
+        elif Path(file_name).suffix == ".csproj":
+            parsed_dependencies = _parse_csproj(absolute_path, manifest_path)
+        elif file_name == "packages.config":
+            parsed_dependencies = _parse_packages_config(absolute_path, manifest_path)
+        elif file_name == "Directory.Packages.props":
+            parsed_dependencies = _parse_directory_packages_props(absolute_path, manifest_path)
         else:
             parsed_dependencies = _parse_requirements(absolute_path, manifest_path)
 
@@ -98,4 +111,6 @@ def _is_supported_manifest(file_name: str) -> bool:
         or file_name.startswith(_REQUIREMENTS_PREFIX)
         or file_name in _JAVA_MANIFESTS
         or file_name in _RUST_MANIFESTS
+        or PurePosixPath(file_name).suffix in _CSHARP_MANIFEST_SUFFIXES
+        or file_name in _CSHARP_NAMED_MANIFESTS
     )
